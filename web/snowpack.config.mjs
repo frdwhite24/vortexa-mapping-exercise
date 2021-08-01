@@ -22,4 +22,12 @@ export default {
   buildOptions: {
     /* ... */
   },
+  alias: {
+    '@': './src/',
+    '@components': './src/components',
+    '@features': './src/features',
+    '@store': './src/app/store.js',
+    '@constants': './src/constants.js',
+    '@services': './src/services',
+  },
 };
