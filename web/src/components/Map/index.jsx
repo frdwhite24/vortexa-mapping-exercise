@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader } from '@googlemaps/js-api-loader';
-import 'leaflet/dist/leaflet.css';
 
 import {
   selectBoatRamps,
