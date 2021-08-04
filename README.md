@@ -4,11 +4,15 @@ The coding challenge for Vortexa as per the guidelines [here](https://github.com
 
 ## How to run locally
 
-The application can either be started using `docker-compose` to run the services within Docker containers, or on the local machine as separate services.
+The application can either be started using `docker-compose` to run the services within Docker containers, or on the local machine as separate services. Please ensure you don't have anything running on ports 8082 and 3002.
 
 ```bash
 # OPTION 1: Docker containers using docker-compose
-docker-compose up
+# -d flag to run in detatched mode, if the service is not working, run without
+# this flag and review the server logs
+# NOTE: Snowpack requires a minute or two upon first start, so the Web application
+# will not be available at the below port right away.
+docker-compose up -d
 
 # OPTION 2: Separate local services
 # Start the API
@@ -22,6 +26,11 @@ npm install
 npm start
 ```
 
+With both solutions, the services will be served at:
+
+- API: localhost:3002/boat_ramps
+- Web: localhost:8082
+
 ## Architecture decisions
 
 | Decision                                        | Reasoning                                                    |
@@ -33,5 +42,5 @@ npm start
 | Google Maps JavaScript API vs Leaflet/Mapbox GL | I started out using Leaflet with React-Leaflet, based on OSM but quickly found that the data input to the GeoJSON component was immutable and so once the response from the fetch to the server came back, the data would not load onto the map. I'm sure I'd be able to get around this but I moved onto a proprietary solution to try something else. I'm fairly familiar with Mapbox GL and so chose the Google Maps JS API for which I could get free credit on a new GCP account. It functions fairly similarly to the Mapbox GL JS API and it did what I needed it to do so I stuck with it. |
 | Recharts                                        | There were other alternatives such as CanvasJS and React-Charts but I found they had fairly low download rates on NPM, and weren't recently maintained. Recharts was quick to implement and looked the most healthy of the options. |
 | CSS Modules                                     | I think if I had more time and I was exploring something new for me, I'd choose a CSS in JS solution. As it stands, I'm familiar with CSS modules which cleanly scopes the CSS for each component and results in a clean, and scaleable styling solution. |
-| ``/services` and `/components` directories      | I've found this pattern to scale well and separate business logic with UI logic sufficiently so that testing can be appropriately targeted (if the UI is going to change lots and rapid iterations are required, unit tests can focus on business logic instead). |
+| `/services` and `/components` directories      | I've found this pattern to scale well and separate business logic with UI logic sufficiently so that testing can be appropriately targeted (if the UI is going to change lots and rapid iterations are required, unit tests can focus on business logic instead). |
 

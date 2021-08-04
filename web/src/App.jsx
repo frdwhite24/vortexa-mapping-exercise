@@ -16,7 +16,7 @@ const App = () => {
     // TODO: make this an async thunk in the redux store rather than using a
     // load reducer
     const fetchData = async () => {
-      const response = await fetch('http://localhost:3000/boat_ramps');
+      const response = await fetch('http://localhost:3002/boat_ramps');
       const data = await response.json();
       dispatch(load(data));
     };

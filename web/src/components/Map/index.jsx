@@ -58,7 +58,7 @@ export const Map = () => {
       });
       setHasData(true);
     }
-  }, [boatRamps]);
+  }, [boatRamps, mapRef.current]);
 
   return (
     <div className={styles.root}>
