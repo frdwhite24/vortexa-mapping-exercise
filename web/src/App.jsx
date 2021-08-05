@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   selectBoatRamps,
   filterMaterial,
+  filterArea,
 } from '@features/boatRamps/boatRampsSlice';
 import { getAreaRangesCount, getMaterialsCount } from '@services/boatRamps';
 import { getDataForChart } from '@services/charts';
@@ -34,8 +35,13 @@ const App = () => {
 
   const handleMaterialFilter = (e) => {
     if (e?.activeLabel) {
-      console.log(e);
       dispatch(filterMaterial(e.activeLabel));
+    }
+  };
+
+  const handleAreaFilter = (e) => {
+    if (e?.activeLabel) {
+      dispatch(filterArea(e.activeLabel));
     }
   };
 
@@ -65,6 +71,7 @@ const App = () => {
           width={450}
           height={250}
           title="Boat ramp count per area range (unit?)"
+          handleClick={handleAreaFilter}
         />
       </div>
       <button onClick={handleReset} className={styles.reset}>
