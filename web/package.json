@@ -3,12 +3,14 @@
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
-    "test": "web-test-runner \"src/**/*.test.jsx\"",
+    "test": "web-test-runner \"src/**/*.test.{js,jsx}\" --node-resolve",
+    "test:watch": "web-test-runner \"src/**/*.test.{js,jsx}\" --node-resolve --watch",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "lint": "prettier --check \"src/**/*.{js,jsx}\""
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.12.1",
+    "@react-google-maps/api": "^2.2.0",
     "@reduxjs/toolkit": "^1.6.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

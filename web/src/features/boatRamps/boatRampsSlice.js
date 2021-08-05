@@ -11,9 +11,9 @@ const boatRampsSlice = createSlice({
     load(state, action) {
       state.value = action.payload;
     },
-    filterGravel(state) {
+    filterMaterial(state, action) {
       const features = state.value.features.filter(
-        (feature) => feature.properties.material === 'Gravel',
+        (feature) => feature.properties.material === action.payload,
       );
       state.value = {
         ...state.value,
@@ -27,5 +27,5 @@ const boatRampsSlice = createSlice({
 
 export const selectBoatRamps = (state) => state.boatRamps.value;
 
-export const { load, filterGravel } = boatRampsSlice.actions;
+export const { load, filterMaterial } = boatRampsSlice.actions;
 export default boatRampsSlice.reducer;

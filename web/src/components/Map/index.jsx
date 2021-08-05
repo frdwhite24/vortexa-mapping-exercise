@@ -1,69 +1,53 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Loader } from '@googlemaps/js-api-loader';
-
+import React, { useCallback, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
-  selectBoatRamps,
-  filterGravel,
-} from '@features/boatRamps/boatRampsSlice';
+  GoogleMap,
+  Marker,
+  Polygon,
+  useJsApiLoader,
+} from '@react-google-maps/api';
+
+import { selectBoatRamps } from '@features/boatRamps/boatRampsSlice';
+import { getCentroid, getPaths } from '@services/boatRamps';
 import styles from './Map.module.css';
 
 export const Map = () => {
-  const dispatch = useDispatch();
-  const [hasData, setHasData] = useState(false);
   const boatRamps = useSelector(selectBoatRamps);
-  const mapRef = useRef(null);
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: 'AIzaSyBf8iua_HK_Mcbt7joQwQEF8gRmAOmertU',
+  });
+  const [map, setMap] = useState(null);
 
-  const loader = new Loader({
-    apiKey: 'AIzaSyBf8iua_HK_Mcbt7joQwQEF8gRmAOmertU',
-    version: 'weekly',
+  const onMapLoad = useCallback((map) => {
+    setMap(map);
   });
 
-  const handleFilter = () => {
-    dispatch(filterGravel());
-  };
-
-  useEffect(() => {
-    const initialiseMap = async () => {
-      await loader.load();
-      mapRef.current = new google.maps.Map(document.getElementById('map'), {
-        // TODO: implement a way to get the bounds of the data in the map and
-        // pan to that upon load rather than hardcoding these values
-        center: { lat: -27.916709360221157, lng: 153.3999738962762 },
-        zoom: 10,
-      });
-    };
-
-    initialiseMap();
-  }, []);
-
-  useEffect(() => {
-    if (hasData) {
-      // This is to remove all the current data on the map so that when the
-      // geojson from the filtered data in the store is reloaded, it's plotted
-      // onto an empty map, rather than on top of an existing layer. I could just
-      // remove the features and have all the logic below as this logic wouldn't
-      // be the most performant for large datasets, but I wanted to keep all the
-      // logic to the redux reducers rather than in here or a custom hook
-      mapRef.current.data.forEach((feature) => {
-        mapRef.current.data.remove(feature);
-      });
-    }
-
-    if (mapRef.current && Object.keys(boatRamps)?.length) {
-      // TODO: make these polygons much clearer on the map, or turn them into
-      // markers by getting the centroid of the data points
-      mapRef.current.data.addGeoJson(boatRamps, {
-        idPropertyName: 'boatRamps',
-      });
-      setHasData(true);
-    }
-  }, [boatRamps, mapRef.current]);
+  const onMapUnmount = useCallback((map) => {
+    setMap(null);
+  });
 
   return (
     <div className={styles.root}>
-      <div id="map" className={styles.map} />
-      <button onClick={handleFilter}>show gravel ramps</button>
+      {isLoaded && (
+        <GoogleMap
+          mapContainerClassName={styles.map}
+          onLoad={onMapLoad}
+          onUnmount={onMapUnmount}
+          zoom={10}
+          center={{ lat: -27.9167, lng: 153.3999 }}
+          onBoundsChanged={() => {}}
+        >
+          {boatRamps?.features.map((ramp) => {
+            return (
+              <div key={ramp.id}>
+                <Marker position={getCentroid(ramp.geometry.coordinates)} />
+                <Polygon paths={getPaths(ramp.geometry.coordinates)} />
+              </div>
+            );
+          })}
+        </GoogleMap>
+      )}
     </div>
   );
 };

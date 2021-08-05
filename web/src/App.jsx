@@ -1,16 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectBoatRamps } from '@features/boatRamps/boatRampsSlice';
+import {
+  selectBoatRamps,
+  filterMaterial,
+} from '@features/boatRamps/boatRampsSlice';
 import { getAreaRangesCount, getMaterialsCount } from '@services/boatRamps';
 import { getDataForChart } from '@services/charts';
 
 import { Map } from '@components/Map';
 import { BarChart } from '@components/BarChart';
 import { load } from '@features/boatRamps/boatRampsSlice';
-import './App.css';
+import styles from './App.module.css';
 
 const App = () => {
   const dispatch = useDispatch();
+  const boatRamps = useSelector(selectBoatRamps);
+  const [shouldLoadData, setShouldLoadData] = useState(true);
 
   useEffect(() => {
     // TODO: make this an async thunk in the redux store rather than using a
@@ -21,46 +26,51 @@ const App = () => {
       dispatch(load(data));
     };
 
-    fetchData();
-  }, []);
-
-  const boatRamps = useSelector(selectBoatRamps);
-
-  useEffect(() => {
-    // TODO: make charts with this data, clickable to filter data shown on map,
-    // in an ideal world pan to extent of new data
-    if (Object.keys(boatRamps)?.length) {
-      // console.log(
-      //   'count of material type: ',
-      //   getMaterialsCount(boatRamps?.features),
-      // );
-      // console.log(
-      //   'count of area ranges: ',
-      //   getAreaRangesCount(boatRamps?.features),
-      // );
+    if (shouldLoadData) {
+      fetchData();
+      setShouldLoadData(false);
     }
-  }, [boatRamps]);
+  }, [shouldLoadData]);
 
-  // TODO: render out the charts and add a bit of styling to the page
+  const handleMaterialFilter = (e) => {
+    if (e?.activeLabel) {
+      console.log(e);
+      dispatch(filterMaterial(e.activeLabel));
+    }
+  };
+
+  const handleReset = () => {
+    setShouldLoadData(true);
+  };
+
   return (
-    <>
-      <BarChart
-        data={getDataForChart(getMaterialsCount(boatRamps?.features))}
-        xDataKey="name"
-        barDataKey="count"
-        width={650}
-        height={250}
-        title="Boat ramp count per material"
-      />
-      <BarChart
-        data={getDataForChart(getAreaRangesCount(boatRamps?.features))}
-        xDataKey="name"
-        barDataKey="count"
-        width={650}
-        height={250}
-        title="Boat ramp count per area range (unit?)"
-      />
-    </>
+    <div className={styles.root}>
+      <div className={styles.map}>
+        <Map />
+      </div>
+      <div className={styles.charts}>
+        <BarChart
+          data={getDataForChart(getMaterialsCount(boatRamps?.features))}
+          xDataKey="name"
+          barDataKey="count"
+          width={450}
+          height={250}
+          title="Boat ramp count per material"
+          handleClick={handleMaterialFilter}
+        />
+        <BarChart
+          data={getDataForChart(getAreaRangesCount(boatRamps?.features))}
+          xDataKey="name"
+          barDataKey="count"
+          width={450}
+          height={250}
+          title="Boat ramp count per area range (unit?)"
+        />
+      </div>
+      <button onClick={handleReset} className={styles.reset}>
+        Reset data
+      </button>
+    </div>
   );
 };
 

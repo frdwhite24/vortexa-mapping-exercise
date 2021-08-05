@@ -37,3 +37,34 @@ export const getAreaRangesCount = (boatRamps) => {
     }
   }, {});
 };
+
+export const getCentroid = (input) => {
+  if (!input) return;
+
+  const coords = input[0][0];
+  const totals = coords?.reduce(
+    (total, coord) => {
+      return {
+        lng: total.lng + coord[0],
+        lat: total.lat + coord[1],
+      };
+    },
+    { lat: 0, lng: 0 },
+  );
+
+  if (!totals) return;
+
+  return {
+    lng: totals.lng / coords.length,
+    lat: totals.lat / coords.length,
+  };
+};
+
+export const getPaths = (input) => {
+  if (!input) return;
+
+  return input[0][0].map((coord) => ({
+    lng: coord[0],
+    lat: coord[1],
+  }));
+};

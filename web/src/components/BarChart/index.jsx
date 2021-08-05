@@ -3,7 +3,6 @@ import {
   Bar,
   BarChart as ReBarChart,
   CartesianGrid,
-  Text,
   Tooltip,
   XAxis,
   YAxis,
@@ -18,14 +17,19 @@ export const BarChart = ({
   width,
   height,
   title,
+  handleClick,
 }) => {
   return (
     <div className={styles.root}>
       {title && <h3>{title}</h3>}
-      <ReBarChart width={width} height={height} data={data}>
-        <Text textAnchor="start">Hello</Text>
+      <ReBarChart
+        width={width}
+        height={height}
+        data={data}
+        onClick={handleClick}
+      >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey={xDataKey} />
+        <XAxis dataKey={xDataKey} angle="305" minTickGap={50} />
         <YAxis />
         <Tooltip />
         <Bar dataKey={barDataKey} fill="#8884d8" />

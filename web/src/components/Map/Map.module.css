@@ -1,9 +1,11 @@
 .root {
   display: flex;
   align-items: center;
+  height: 100%;
+  width: 100%;
 }
 
 .map {
-  height: 100vh;
-  width: 80vw;
+  height: 100%;
+  width: 100%;
 }
