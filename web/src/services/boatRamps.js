@@ -68,3 +68,6 @@ export const getPaths = (input) => {
     lat: coord[1],
   }));
 };
+
+export const getVisibleBoatRamps = (boatRamps) =>
+  boatRamps?.features?.filter((feature) => feature.isVisible);
