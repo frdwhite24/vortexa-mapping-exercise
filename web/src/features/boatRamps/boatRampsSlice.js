@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AREA_RANGES } from '@constants';
+
+import { getCentroid, isWithinBounds } from '@services/boatRamps';
 
 export const fetchBoatRamps = createAsyncThunk(
   'boatRamps/fetchBoatRamps',
@@ -13,38 +14,36 @@ const boatRampsSlice = createSlice({
   name: 'boatRamps',
   initialState: {
     featureCollection: {},
+    materialFilter: '',
+    areaFilter: '',
   },
   reducers: {
-    filterMaterial(state, action) {
+    filterDataToBounds(state, action) {
       state.featureCollection = {
         ...state.featureCollection,
         features: state.featureCollection.features.map((feature) => {
-          if (feature.properties.material === action.payload) {
-            return { ...feature };
+          const centroid = getCentroid(feature.geometry.coordinates);
+          if (isWithinBounds(centroid, action.payload)) {
+            return { ...feature, isVisible: true };
           }
           return { ...feature, isVisible: false };
         }),
       };
     },
-    filterArea(state, action) {
-      const range = AREA_RANGES.find((range) => range.name === action.payload);
-      state.featureCollection = {
-        ...state.featureCollection,
-        features: state.featureCollection.features.map((feature) => {
-          if (
-            feature.properties.area_ >= range.min &&
-            feature.properties.area_ < range.max
-          ) {
-            return { ...feature };
-          }
-          return { ...feature, isVisible: false };
-        }),
-      };
+    setMaterialFilter(state, action) {
+      state.materialFilter = action.payload;
+    },
+    setAreaFilter(state, action) {
+      state.areaFilter = action.payload;
+    },
+    clearFilters(state) {
+      state.materialFilter = '';
+      state.areaFilter = '';
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchBoatRamps.pending, (state, action) => {
+      .addCase(fetchBoatRamps.pending, (state, _) => {
         state.status = 'loading';
       })
       .addCase(fetchBoatRamps.fulfilled, (state, action) => {
@@ -61,5 +60,15 @@ const boatRampsSlice = createSlice({
 });
 
 export const selectBoatRamps = (state) => state.boatRamps.featureCollection;
-export const { filterArea, filterMaterial } = boatRampsSlice.actions;
+export const selectFilters = (state) => ({
+  areaFilter: state.boatRamps.areaFilter,
+  materialFilter: state.boatRamps.materialFilter,
+});
+export const {
+  hideRamp,
+  setAreaFilter,
+  setMaterialFilter,
+  filterDataToBounds,
+  clearFilters,
+} = boatRampsSlice.actions;
 export default boatRampsSlice.reducer;

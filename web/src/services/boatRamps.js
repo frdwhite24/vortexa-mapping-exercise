@@ -38,6 +38,17 @@ export const getAreaRangesCount = (boatRamps) => {
   }, {});
 };
 
+export const isWithinBounds = ({ lat, lng }, bounds) => {
+  if (
+    lat <= bounds.north &&
+    lat >= bounds.south &&
+    lng >= bounds.west &&
+    lng <= bounds.east
+  )
+    return true;
+  return false;
+};
+
 export const getCentroid = (input) => {
   if (!input) return;
 
@@ -69,5 +80,39 @@ export const getPaths = (input) => {
   }));
 };
 
-export const getVisibleBoatRamps = (boatRamps) =>
-  boatRamps?.features?.filter((feature) => feature.isVisible);
+const filterByMapBounds = (features) => {
+  if (!features) return [];
+  return features.filter((feature) => feature.isVisible);
+};
+
+const filterByArea = (features, areaFilter) => {
+  if (areaFilter) {
+    const range = AREA_RANGES.find((range) => range.name === areaFilter);
+    return features.filter(
+      (feature) =>
+        feature.properties.area_ >= range.min &&
+        feature.properties.area_ < range.max,
+    );
+  }
+  return features;
+};
+
+const filterByMaterial = (features, materialFilter) => {
+  if (materialFilter) {
+    return features.filter(
+      (feature) => feature.properties.material === materialFilter,
+    );
+  }
+  return features;
+};
+
+export const getFilteredBoatRamps = (features, areaFilter, materialFilter) => {
+  if (!features) return [];
+
+  let filteredFeatures = [...features];
+  filteredFeatures = filterByArea(filteredFeatures, areaFilter);
+  filteredFeatures = filterByMaterial(filteredFeatures, materialFilter);
+  filteredFeatures = filterByMapBounds(filteredFeatures);
+
+  return filteredFeatures;
+};

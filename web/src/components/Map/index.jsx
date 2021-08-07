@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   GoogleMap,
   Marker,
@@ -7,19 +7,29 @@ import {
   useJsApiLoader,
 } from '@react-google-maps/api';
 
-import { selectBoatRamps } from '@features/boatRamps/boatRampsSlice';
+import {
+  selectBoatRamps,
+  selectFilters,
+  filterDataToBounds,
+} from '@features/boatRamps/boatRampsSlice';
 import {
   getCentroid,
   getPaths,
-  getVisibleBoatRamps,
+  getFilteredBoatRamps,
 } from '@services/boatRamps';
 import styles from './Map.module.css';
 
 const Data = () => {
   const featureCollection = useSelector(selectBoatRamps);
+  const { areaFilter, materialFilter } = useSelector(selectFilters);
+
   return (
     <>
-      {getVisibleBoatRamps(featureCollection).map((ramp) => {
+      {getFilteredBoatRamps(
+        featureCollection?.features,
+        areaFilter,
+        materialFilter,
+      ).map((ramp) => {
         return (
           <div key={ramp.id}>
             <Marker position={getCentroid(ramp.geometry.coordinates)} />
@@ -36,19 +46,22 @@ const Map = () => {
     id: 'google-map-script',
     googleMapsApiKey: 'AIzaSyBf8iua_HK_Mcbt7joQwQEF8gRmAOmertU',
   });
+  const dispatch = useDispatch();
   const [map, setMap] = useState(null);
 
   const onMapLoad = useCallback((map) => {
     setMap(map);
   }, []);
 
-  const onMapUnmount = useCallback((map) => {
+  const onMapUnmount = useCallback(() => {
     setMap(null);
   }, []);
 
-  const onZoomChanged = useCallback(() => {
-    console.log('zoom map', map);
-  }, [map]);
+  const onBoundsChanged = () => {
+    if (map) {
+      dispatch(filterDataToBounds(map.getBounds().toJSON()));
+    }
+  };
 
   return (
     <div className={styles.root}>
@@ -58,9 +71,9 @@ const Map = () => {
             mapContainerClassName={styles.map}
             onLoad={onMapLoad}
             onUnmount={onMapUnmount}
-            onZoomChanged={onZoomChanged}
             zoom={10}
             center={{ lat: -27.9167, lng: 153.3999 }}
+            onBoundsChanged={onBoundsChanged}
           >
             <Data />
           </GoogleMap>

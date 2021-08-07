@@ -4,13 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getAreaRangesCount,
   getMaterialsCount,
-  getVisibleBoatRamps,
+  getFilteredBoatRamps,
 } from '@services/boatRamps';
 import { getDataForChart } from '@services/charts';
 import {
   selectBoatRamps,
-  filterMaterial,
-  filterArea,
+  selectFilters,
+  setMaterialFilter,
+  setAreaFilter,
 } from '@features/boatRamps/boatRampsSlice';
 import { BarChart } from '@components/BarChart';
 import styles from './Charts.module.css';
@@ -18,17 +19,22 @@ import styles from './Charts.module.css';
 export const Charts = () => {
   const dispatch = useDispatch();
   const featureCollection = useSelector(selectBoatRamps);
-  const features = getVisibleBoatRamps(featureCollection);
+  const { areaFilter, materialFilter } = useSelector(selectFilters);
+  const features = getFilteredBoatRamps(
+    featureCollection?.features,
+    areaFilter,
+    materialFilter,
+  );
 
   const handleMaterialFilter = (e) => {
     if (e?.activeLabel) {
-      dispatch(filterMaterial(e.activeLabel));
+      dispatch(setMaterialFilter(e.activeLabel));
     }
   };
 
   const handleAreaFilter = (e) => {
     if (e?.activeLabel) {
-      dispatch(filterArea(e.activeLabel));
+      dispatch(setAreaFilter(e.activeLabel));
     }
   };
 
