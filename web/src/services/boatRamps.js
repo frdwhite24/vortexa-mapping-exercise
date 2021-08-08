@@ -14,7 +14,7 @@ export const getMaterialsCount = (boatRamps) => {
   }, {});
 };
 
-const getAreaRange = (area) => {
+export const getAreaRange = (area) => {
   if (!area && area !== 0) return;
 
   const range = AREA_RANGES.find(({ min, max }) => area >= min && area < max);
@@ -85,7 +85,7 @@ const filterByMapBounds = (features) => {
   return features.filter((feature) => feature.isVisible);
 };
 
-const filterByArea = (features, areaFilter) => {
+export const filterByArea = (features, areaFilter) => {
   if (areaFilter) {
     const range = AREA_RANGES.find((range) => range.name === areaFilter);
     return features.filter(
@@ -97,7 +97,7 @@ const filterByArea = (features, areaFilter) => {
   return features;
 };
 
-const filterByMaterial = (features, materialFilter) => {
+export const filterByMaterial = (features, materialFilter) => {
   if (materialFilter) {
     return features.filter(
       (feature) => feature.properties.material === materialFilter,

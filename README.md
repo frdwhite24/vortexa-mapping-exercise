@@ -68,10 +68,11 @@ With both solutions, the services will be served at:
 ## Things to improve
 
 1. Sort out responsiveness, currently it is only designed for a desktop sized viewport.
-2. Create a page header which contains the title and an about route to give some context on what the application is for.
-3. Fix the positions of the categories on the bar charts so they don't jump around.
-4. Consider a different visualisation method rather than just 2 bar charts.
-5. CSS Modules not scoping to the component correctly (missing component name at start of class name)
-6. Fix auto imports in Vim with alias routing
-7. Fully restrict the Google Maps API key so it can't be abused. Remove from source code and rotate if the repository becomes public.
+2. Extra tests, most business logic in the services are tested, and these are mostly all the interfaces between the mapping lib and charting lib. Testing on the state handling is a must after this!
+3. Create a page header which contains the title and an about route to give some context on what the application is for.
+4. Fix the positions of the categories on the bar charts so they don't jump around.
+5. Consider a different visualisation method rather than just 2 bar charts.
+6. CSS Modules not scoping to the component correctly (missing component name at start of class name)
+7. Fix auto imports in Vim with alias routing
+8. Fully restrict the Google Maps API key so it can't be abused. Remove from source code and rotate if the repository becomes public.
 
