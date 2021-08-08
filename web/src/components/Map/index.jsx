@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   GoogleMap,
@@ -19,7 +19,7 @@ import {
 } from '@services/boatRamps';
 import styles from './Map.module.css';
 
-const Data = () => {
+const MapData = () => {
   const featureCollection = useSelector(selectBoatRamps);
   const { areaFilter, materialFilter } = useSelector(selectFilters);
 
@@ -44,6 +44,9 @@ const Data = () => {
 const Map = () => {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
+    // TODO: keeping this key here for ease while the repository is private,
+    // would need to make sure it's rotated regularly and has strict
+    // restrictions so it can't be abused.
     googleMapsApiKey: 'AIzaSyBf8iua_HK_Mcbt7joQwQEF8gRmAOmertU',
   });
   const dispatch = useDispatch();
@@ -74,8 +77,13 @@ const Map = () => {
             zoom={10}
             center={{ lat: -27.9167, lng: 153.3999 }}
             onBoundsChanged={onBoundsChanged}
+            options={{
+              fullscreenControlOptions: {
+                position: google.maps.ControlPosition.LEFT_TOP,
+              },
+            }}
           >
-            <Data />
+            <MapData />
           </GoogleMap>
         )}
       </div>

@@ -27,9 +27,10 @@ export const BarChart = ({
         height={height}
         data={data}
         onClick={handleClick}
+        margin={{ bottom: 45, right: 25 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey={xDataKey} angle="305" minTickGap={50} />
+        <XAxis dataKey={xDataKey} angle="340" textAnchor="end" interval={0} />
         <YAxis />
         <Tooltip />
         <Bar dataKey={barDataKey} fill="#8884d8" />
