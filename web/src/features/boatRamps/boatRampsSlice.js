@@ -1,6 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getCentroid, isWithinBounds } from '@services/boatRamps';
+import {
+  getCentroid,
+  isWithinBounds,
+  getFilteredBoatRamps,
+  getMaterialsCount,
+  getAreaRangesCount,
+} from '@services/boatRamps';
+import { getDataForChart } from '@services/charts';
 
 export const fetchBoatRamps = createAsyncThunk(
   'boatRamps/fetchBoatRamps',
@@ -64,6 +71,25 @@ export const selectFilters = (state) => ({
   areaFilter: state.boatRamps.areaFilter,
   materialFilter: state.boatRamps.materialFilter,
 });
+
+export const selectAreaChartData = (state) => {
+  const filteredRamps = getFilteredBoatRamps(
+    state.boatRamps.featureCollection,
+    state.boatRamps.areaFilter,
+    state.boatRamps.materialFilter,
+  );
+  return getDataForChart(getAreaRangesCount(filteredRamps));
+};
+
+export const selectMaterialChartData = (state) => {
+  const filteredRamps = getFilteredBoatRamps(
+    state.boatRamps.featureCollection,
+    state.boatRamps.areaFilter,
+    state.boatRamps.materialFilter,
+  );
+  return getDataForChart(getMaterialsCount(filteredRamps));
+};
+
 export const {
   hideRamp,
   setAreaFilter,

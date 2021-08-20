@@ -2,29 +2,18 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  getAreaRangesCount,
-  getMaterialsCount,
-  getFilteredBoatRamps,
-} from '@services/boatRamps';
-import { getDataForChart } from '@services/charts';
-import {
-  selectBoatRamps,
-  selectFilters,
   setMaterialFilter,
   setAreaFilter,
+  selectAreaChartData,
+  selectMaterialChartData,
 } from '@features/boatRamps/boatRampsSlice';
 import { BarChart } from '@components/BarChart';
 import styles from './Charts.module.css';
 
 export const Charts = () => {
   const dispatch = useDispatch();
-  const featureCollection = useSelector(selectBoatRamps);
-  const { areaFilter, materialFilter } = useSelector(selectFilters);
-  const features = getFilteredBoatRamps(
-    featureCollection?.features,
-    areaFilter,
-    materialFilter,
-  );
+  const areaData = useSelector(selectAreaChartData);
+  const materialData = useSelector(selectMaterialChartData);
 
   const handleMaterialFilter = (e) => {
     if (e?.activeLabel) {
@@ -41,7 +30,7 @@ export const Charts = () => {
   return (
     <div className={styles.root}>
       <BarChart
-        data={getDataForChart(getMaterialsCount(features))}
+        data={materialData}
         xDataKey="name"
         barDataKey="count"
         width={450}
@@ -50,7 +39,7 @@ export const Charts = () => {
         handleClick={handleMaterialFilter}
       />
       <BarChart
-        data={getDataForChart(getAreaRangesCount(features))}
+        data={areaData}
         xDataKey="name"
         barDataKey="count"
         width={450}
